@@ -21,10 +21,18 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       isLoading: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      setUser: (user) => {
+        console.log('Auth store setUser called with:', user);
+        set({ user, isAuthenticated: !!user });
+        console.log('Auth state after setUser:', { user, isAuthenticated: !!user });
+      },
       setToken: (token) => set({ token }),
       setLoading: (isLoading) => set({ isLoading }),
-      login: (user, token) => set({ user, token, isAuthenticated: true }),
+      login: (user, token) => {
+        console.log('Auth store login called with:', { user, token });
+        set({ user, token, isAuthenticated: true });
+        console.log('Auth state updated');
+      },
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
     }),
     {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export const dynamic = 'force-dynamic';
 import { useRouter } from 'next/navigation';
@@ -20,15 +20,35 @@ export default function LoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const hasRedirected = useRef(false);
   
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated) {
-      router.push('/dashboard');
+    if (isAuthenticated && user && !hasRedirected.current) {
+      hasRedirected.current = true;
+      setIsRedirecting(true);
+      
+      // Use window.location.href for more reliable navigation
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 500);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, user, isRedirecting]);
+
+  // Early return if already authenticated and redirecting
+  if (isAuthenticated && user && isRedirecting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +66,19 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (data.success) {
+        // Update auth state
         login(data.data.user, data.data.token);
-        toast.success('Login successful!');
-        router.push('/dashboard');
+        toast.success('Login successful! Redirecting...');
+        
+        // Set redirecting state and redirect directly
+        setIsRedirecting(true);
+        hasRedirected.current = true;
+        
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1000);
       } else {
+        console.error('Login failed:', data.message);
         toast.error(data.message || 'Login failed');
       }
     } catch (error) {
@@ -166,9 +195,9 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isLoading || isRedirecting}
               >
-                {isLoading ? 'Signing in...' : 'Sign in'}
+                {isRedirecting ? 'Redirecting...' : isLoading ? 'Signing in...' : 'Sign in'}
               </Button>
             </form>
           </CardContent>

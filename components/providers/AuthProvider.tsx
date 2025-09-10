@@ -18,26 +18,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { user, isAuthenticated, isLoading, login, logout, setLoading } = useAuthStore();
 
   useEffect(() => {
-    // Check for existing auth token on mount
-    const checkAuth = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('/api/auth/me');
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.data.user) {
-            login(data.data.user, 'existing-token');
+    // Only check auth if not already authenticated
+    if (!isAuthenticated) {
+      const checkAuth = async () => {
+        setLoading(true);
+        try {
+          const response = await fetch('/api/auth/me');
+          if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.data.user) {
+              login(data.data.user, 'existing-token');
+            }
           }
+        } catch (error) {
+          console.error('Auth check failed:', error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    checkAuth();
-  }, [login, setLoading]);
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [isAuthenticated, login, setLoading]);
 
   const value = {
     user,

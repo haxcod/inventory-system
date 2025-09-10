@@ -11,9 +11,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
-      <div className="lg:pl-64">
-        <main className="py-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="lg:ml-56">
+        <main className="py-4">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-6">
             {children}
           </div>
         </main>

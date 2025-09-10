@@ -56,10 +56,8 @@ export async function POST(request: NextRequest) {
       branch: user.branch,
     });
 
-    // Set auth cookie
-    setAuthCookie(token, request);
-
-    return NextResponse.json<ApiResponse>({
+    // Create response with auth cookie
+    const response = NextResponse.json<ApiResponse>({
       success: true,
       data: {
         user: {
@@ -75,6 +73,19 @@ export async function POST(request: NextRequest) {
       },
       message: 'Login successful',
     });
+
+    // Set auth cookie on response
+    response.cookies.set({
+      name: 'auth-token',
+      value: token,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      path: '/',
+    });
+
+    return response;
 
   } catch (error) {
     console.error('Login error:', error);

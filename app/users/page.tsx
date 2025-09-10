@@ -270,18 +270,18 @@ export default function UsersPage() {
                           <div className="flex items-center">
                             <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center mr-3">
                               <span className="text-sm font-medium text-white">
-                                {user.name.charAt(0).toUpperCase()}
+                                {String(user.name).charAt(0).toUpperCase()}
                               </span>
                             </div>
                             <div>
-                              <div className="font-medium">{user.name}</div>
+                              <div className="font-medium">{String(user.name)}</div>
                               <div className="text-sm text-gray-500 dark:text-gray-400">
-                                {user.permissions.length} permissions
+                                {Array.isArray(user.permissions) ? user.permissions.length : 0} permissions
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-4">{user.email}</td>
+                        <td className="py-3 px-4">{String(user.email)}</td>
                         <td className="py-3 px-4">
                           <div className="flex items-center">
                             {user.role === 'admin' ? (
@@ -289,10 +289,10 @@ export default function UsersPage() {
                             ) : (
                               <UserIcon className="h-4 w-4 text-blue-500 mr-1" />
                             )}
-                            <span className="capitalize">{user.role}</span>
+                            <span className="capitalize">{String(user.role)}</span>
                           </div>
                         </td>
-                        <td className="py-3 px-4">{user.branch || '-'}</td>
+                        <td className="py-3 px-4">{typeof user.branch === 'string' ? user.branch : '-'}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2 py-1 rounded-full text-xs ${
                             user.isActive
@@ -303,7 +303,7 @@ export default function UsersPage() {
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          {user.lastLogin ? formatDate(user.lastLogin) : 'Never'}
+                          {user.lastLogin ? formatDate(new Date(user.lastLogin)) : 'Never'}
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex space-x-2">

@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import { User } from '@/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here-make-it-long-and-random-for-development';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 export interface JWTPayload {
@@ -29,7 +29,8 @@ export function generateToken(payload: JWTPayload): string {
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    const payload = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    return payload;
   } catch (error) {
     return null;
   }
@@ -79,9 +80,12 @@ export function clearAuthCookie(req?: NextRequest) {
 
 export function getCurrentUser(req?: NextRequest): JWTPayload | null {
   const token = getAuthToken(req);
+  
   if (!token) return null;
   
-  return verifyToken(token);
+  const payload = verifyToken(token);
+  
+  return payload;
 }
 
 export function hasPermission(user: JWTPayload, permission: string): boolean {

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentUser } from '@/lib/auth';
+import { getCurrentUser } from '@/lib/auth-edge';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
@@ -10,6 +10,7 @@ export function middleware(request: NextRequest) {
     '/register',
     '/api/auth/login',
     '/api/auth/register',
+    '/api/auth/me',
   ];
 
   // Check if the route is public
@@ -18,7 +19,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Check authentication for protected routes
-  const currentUser = getCurrentUser(request);
+  const currentUser = await getCurrentUser(request);
+  
   if (!currentUser) {
     // Redirect to login if not authenticated
     if (pathname.startsWith('/api/')) {
