@@ -30,9 +30,10 @@ interface DashboardStats {
 
 interface ChartData {
   name: string;
-  value: number;
+  value?: number;
   sales?: number;
   revenue?: number;
+  totalProducts?: number;
 }
 
 export default function DashboardPage() {
@@ -74,20 +75,20 @@ export default function DashboardPage() {
       });
 
       setSalesData([
-        { name: 'Mon', sales: 12000 },
-        { name: 'Tue', sales: 15000 },
-        { name: 'Wed', sales: 18000 },
-        { name: 'Thu', sales: 14000 },
-        { name: 'Fri', sales: 16000 },
-        { name: 'Sat', sales: 20000 },
-        { name: 'Sun', sales: 17000 },
+        { name: 'Mon', sales: 12000, value: 12000 },
+        { name: 'Tue', sales: 15000, value: 15000 },
+        { name: 'Wed', sales: 18000, value: 18000 },
+        { name: 'Thu', sales: 14000, value: 14000 },
+        { name: 'Fri', sales: 16000, value: 16000 },
+        { name: 'Sat', sales: 20000, value: 20000 },
+        { name: 'Sun', sales: 17000, value: 17000 },
       ]);
 
       setProductData([
-        { name: 'Electronics', totalProducts: 15 },
-        { name: 'Clothing', totalProducts: 12 },
-        { name: 'Books', totalProducts: 8 },
-        { name: 'Home & Garden', totalProducts: 10 },
+        { name: 'Electronics', totalProducts: 15, value: 15 },
+        { name: 'Clothing', totalProducts: 12, value: 12 },
+        { name: 'Books', totalProducts: 8, value: 8 },
+        { name: 'Home & Garden', totalProducts: 10, value: 10 },
       ]);
       
       // Try to fetch real data (will fallback to defaults if API fails)

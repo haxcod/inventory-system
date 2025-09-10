@@ -2,6 +2,10 @@ import { NextRequest } from 'next/server'
 import { POST } from '@/app/api/auth/login/route'
 import { verifyPassword, generateToken } from '@/lib/auth'
 
+// Mock the auth functions
+const mockVerifyPassword = verifyPassword as jest.MockedFunction<typeof verifyPassword>
+const mockGenerateToken = generateToken as jest.MockedFunction<typeof generateToken>
+
 // Mock the MongoDB connection
 jest.mock('@/lib/mongodb', () => ({
   default: jest.fn(() => Promise.resolve({
@@ -50,8 +54,8 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
-      generateToken.mockReturnValue('mock-jwt-token')
+      mockVerifyPassword.mockResolvedValue(true)
+      mockGenerateToken.mockReturnValue('mock-jwt-token')
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -94,8 +98,8 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
-      generateToken.mockReturnValue('mock-jwt-token')
+      mockVerifyPassword.mockResolvedValue(true)
+      mockGenerateToken.mockReturnValue('mock-jwt-token')
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -125,8 +129,8 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
-      generateToken.mockReturnValue('mock-jwt-token')
+      mockVerifyPassword.mockResolvedValue(true)
+      mockGenerateToken.mockReturnValue('mock-jwt-token')
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -174,7 +178,7 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(false)
+      mockVerifyPassword.mockResolvedValue(false)
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -201,7 +205,7 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
+      mockVerifyPassword.mockResolvedValue(true)
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -348,7 +352,7 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockRejectedValue(new Error('Password verification failed'))
+      mockVerifyPassword.mockRejectedValue(new Error('Password verification failed'))
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -377,8 +381,8 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
-      generateToken.mockImplementation(() => {
+      mockVerifyPassword.mockResolvedValue(true)
+      mockGenerateToken.mockImplementation(() => {
         throw new Error('Token generation failed')
       })
 
@@ -446,8 +450,8 @@ describe('/api/auth/login - Comprehensive Integration Tests', () => {
       }
 
       User.findOne.mockResolvedValue(mockUser)
-      verifyPassword.mockResolvedValue(true)
-      generateToken.mockReturnValue('mock-jwt-token')
+      mockVerifyPassword.mockResolvedValue(true)
+      mockGenerateToken.mockReturnValue('mock-jwt-token')
 
       const request = new NextRequest('http://localhost:3000/api/auth/login', {
         method: 'POST',

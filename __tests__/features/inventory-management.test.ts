@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { GET, POST, PUT, DELETE } from '@/app/api/inventory/route'
+import { GET, POST } from '@/app/api/products/route'
+import { PUT, DELETE } from '@/app/api/products/[id]/route'
 
 // Mock the MongoDB connection
 jest.mock('@/lib/mongodb', () => ({

@@ -1,4 +1,5 @@
 import React from 'react'
+import { createPortal } from 'react-dom'
 import { screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { Button } from '@/components/ui/Button'
@@ -74,7 +75,7 @@ describe('Component Edge Cases and Error Handling', () => {
     })
 
     it('should handle all button variants', () => {
-      const variants = ['primary', 'secondary', 'danger', 'success', 'warning'] as const
+      const variants = ['primary', 'secondary', 'destructive', 'outline', 'ghost', 'link'] as const
       
       variants.forEach(variant => {
         const { unmount } = render(<Button variant={variant}>{variant} Button</Button>)
@@ -85,7 +86,7 @@ describe('Component Edge Cases and Error Handling', () => {
     })
 
     it('should handle all button sizes', () => {
-      const sizes = ['sm', 'md', 'lg', 'xl'] as const
+      const sizes = ['sm', 'default', 'lg', 'icon'] as const
       
       sizes.forEach(size => {
         const { unmount } = render(<Button size={size}>{size} Button</Button>)
@@ -438,7 +439,7 @@ describe('Component Edge Cases and Error Handling', () => {
         
         if (!mounted) return null
         
-        return React.createPortal(
+        return createPortal(
           <div>Portal content</div>,
           document.body
         )

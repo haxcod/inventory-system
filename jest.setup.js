@@ -202,6 +202,23 @@ beforeEach(() => {
   })
 })
 
+// Mock auth functions
+jest.mock('@/lib/auth', () => ({
+  verifyPassword: jest.fn(),
+  generateToken: jest.fn(),
+  getCurrentUser: jest.fn(),
+  setAuthCookie: jest.fn(),
+  clearAuthCookie: jest.fn(),
+  hasPermission: jest.fn(),
+}))
+
+// Mock auth-edge functions
+jest.mock('@/lib/auth-edge', () => ({
+  verifyToken: jest.fn(),
+  getCurrentUser: jest.fn(),
+  getAuthToken: jest.fn(),
+}))
+
 // Mock environment variables
 process.env.NODE_ENV = 'test'
 process.env.MONGODB_URI = 'mongodb://localhost:27017/test'

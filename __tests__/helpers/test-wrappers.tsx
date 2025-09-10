@@ -25,17 +25,9 @@ Object.defineProperty(document, 'body', {
 
 // Test wrapper with all necessary providers
 const AllTheProviders = ({ children }: { children: React.ReactNode }) => {
-  const mockUser = {
-    id: '1',
-    email: 'test@example.com',
-    role: 'admin',
-    permissions: ['read:all', 'write:all', 'delete:all'],
-    branch: 'main'
-  }
-
   return (
     <ThemeProvider>
-      <AuthProvider initialUser={mockUser}>
+      <AuthProvider>
         {children}
       </AuthProvider>
     </ThemeProvider>
