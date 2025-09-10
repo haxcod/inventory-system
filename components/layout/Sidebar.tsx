@@ -60,25 +60,53 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? (
-            <XMarkIcon className="h-6 w-6" />
-          ) : (
-            <Bars3Icon className="h-6 w-6" />
-          )}
-        </Button>
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="h-8 w-8"
+          >
+            {isMobileMenuOpen ? (
+              <XMarkIcon className="h-5 w-5" />
+            ) : (
+              <Bars3Icon className="h-5 w-5" />
+            )}
+          </Button>
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+            InventoryPro
+          </h1>
+        </div>
+        
+        {/* Mobile User Info */}
+        <div className="flex items-center space-x-2">
+          <div className="h-6 w-6 rounded-full bg-blue-600 flex items-center justify-center">
+            <span className="text-xs font-medium text-white">
+              {user?.name?.charAt(0).toUpperCase() || 'A'}
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="h-8 w-8"
+          >
+            {theme === 'dark' ? (
+              <SunIcon className="h-4 w-4" />
+            ) : (
+              <MoonIcon className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
       </div>
 
       {/* Sidebar */}
       <div className={cn(
         'fixed inset-y-0 left-0 z-40 w-56 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:block',
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+        'lg:top-0 top-16' // Account for mobile header
       )}>
         <div className="flex flex-col h-full">
           {/* Logo */}
@@ -158,7 +186,7 @@ export function Sidebar() {
       {/* Mobile overlay */}
       {isMobileMenuOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden top-16"
           onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
