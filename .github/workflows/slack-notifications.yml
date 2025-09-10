@@ -33,7 +33,7 @@ jobs:
 
     - name: Notify Slack
       if: always()
-      uses: 8398a7/action-slack@v3
+      uses: 8398a7/action-slack@v4
       with:
         status: ${{ steps.check-result.outputs.status }}
         channel: '#testing'

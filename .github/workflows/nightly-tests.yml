@@ -72,7 +72,7 @@ jobs:
 
     - name: Notify on Success
       if: success()
-      uses: 8398a7/action-slack@v3
+      uses: 8398a7/action-slack@v4
       with:
         status: success
         channel: '#testing'
@@ -83,7 +83,7 @@ jobs:
 
     - name: Notify on Failure
       if: failure()
-      uses: 8398a7/action-slack@v3
+      uses: 8398a7/action-slack@v4
       with:
         status: failure
         channel: '#testing'
