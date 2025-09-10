@@ -7,7 +7,7 @@ import { ApiResponse } from '@/types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -28,7 +28,8 @@ export async function GET(
       }, { status: 403 });
     }
 
-    const user = await User.findById(params.id)
+    const { id } = await params;
+    const user = await User.findById(id)
       .select('-password')
       .populate('branch', 'name');
 
@@ -55,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -76,7 +77,8 @@ export async function PUT(
       }, { status: 403 });
     }
 
-    const user = await User.findById(params.id);
+    const { id } = await params;
+    const user = await User.findById(id);
     if (!user) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -99,7 +101,7 @@ export async function PUT(
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      params.id,
+      id,
       updateData,
       { new: true, runValidators: true }
     ).select('-password').populate('branch', 'name');
@@ -121,7 +123,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -142,7 +144,8 @@ export async function DELETE(
       }, { status: 403 });
     }
 
-    const user = await User.findById(params.id);
+    const { id } = await params;
+    const user = await User.findById(id);
     if (!user) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -159,7 +162,7 @@ export async function DELETE(
     }
 
     // Soft delete
-    await User.findByIdAndUpdate(params.id, { isActive: false });
+    await User.findByIdAndUpdate(id, { isActive: false });
 
     return NextResponse.json<ApiResponse>({
       success: true,

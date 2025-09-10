@@ -7,7 +7,7 @@ import { ApiResponse } from '@/types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -20,7 +20,8 @@ export async function GET(
       }, { status: 401 });
     }
 
-    const invoice = await Invoice.findById(params.id)
+    const { id } = await params;
+    const invoice = await Invoice.findById(id)
       .populate('items.product', 'name sku price')
       .populate('branch', 'name address phone email')
       .populate('createdBy', 'name email');

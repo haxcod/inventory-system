@@ -6,7 +6,7 @@ import { ApiResponse } from '@/types';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -19,7 +19,8 @@ export async function GET(
       }, { status: 401 });
     }
 
-    const product = await Product.findById(params.id).populate('branch', 'name');
+    const { id } = await params;
+    const product = await Product.findById(id).populate('branch', 'name');
     if (!product) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -51,7 +52,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -72,7 +73,8 @@ export async function PUT(
       }, { status: 403 });
     }
 
-    const product = await Product.findById(params.id);
+    const { id } = await params;
+    const product = await Product.findById(id);
     if (!product) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -96,7 +98,7 @@ export async function PUT(
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      params.id,
+      id,
       updateData,
       { new: true, runValidators: true }
     ).populate('branch', 'name');
@@ -118,7 +120,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await connectDB();
@@ -139,7 +141,8 @@ export async function DELETE(
       }, { status: 403 });
     }
 
-    const product = await Product.findById(params.id);
+    const { id } = await params;
+    const product = await Product.findById(id);
     if (!product) {
       return NextResponse.json<ApiResponse>({
         success: false,
@@ -156,7 +159,7 @@ export async function DELETE(
     }
 
     // Soft delete
-    await Product.findByIdAndUpdate(params.id, { isActive: false });
+    await Product.findByIdAndUpdate(id, { isActive: false });
 
     return NextResponse.json<ApiResponse>({
       success: true,
