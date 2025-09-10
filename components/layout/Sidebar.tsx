@@ -1,0 +1,167 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { useTheme } from '@/components/providers/ThemeProvider';
+import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils';
+import {
+  HomeIcon,
+  CubeIcon,
+  ShoppingCartIcon,
+  DocumentTextIcon,
+  ChartBarIcon,
+  CogIcon,
+  UserGroupIcon,
+  BuildingOfficeIcon,
+  SunIcon,
+  MoonIcon,
+  ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
+
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
+  { name: 'Products', href: '/products', icon: CubeIcon },
+  { name: 'Billing', href: '/billing', icon: ShoppingCartIcon },
+  { name: 'Invoices', href: '/invoices', icon: DocumentTextIcon },
+  { name: 'Payments', href: '/payments', icon: DocumentTextIcon },
+  { name: 'Reports', href: '/reports', icon: ChartBarIcon },
+  { name: 'Branches', href: '/branches', icon: BuildingOfficeIcon },
+  { name: 'Users', href: '/users', icon: UserGroupIcon },
+  { name: 'Settings', href: '/settings', icon: CogIcon },
+];
+
+export function Sidebar() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const filteredNavigation = navigation.filter(item => {
+    if (item.name === 'Users' || item.name === 'Branches') {
+      return user?.role === 'admin';
+    }
+    return true;
+  });
+
+  return (
+    <>
+      {/* Mobile menu button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? (
+            <XMarkIcon className="h-6 w-6" />
+          ) : (
+            <Bars3Icon className="h-6 w-6" />
+          )}
+        </Button>
+      </div>
+
+      {/* Sidebar */}
+      <div className={cn(
+        'fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex items-center justify-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+            <h1 className="text-xl font-bold text-primary-600 dark:text-primary-400">
+              InventoryPro
+            </h1>
+          </div>
+
+          {/* Navigation */}
+          <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            {filteredNavigation.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'sidebar-menu-item',
+                    isActive && 'sidebar-menu-item-active'
+                  )}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <item.icon className="sidebar-menu-item-icon" />
+                  <span className="sidebar-menu-item-text">{item.name}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* User info and actions */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0">
+                <div className="h-8 w-8 rounded-full bg-primary-600 flex items-center justify-center">
+                  <span className="text-sm font-medium text-white">
+                    {user?.name?.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                  {user?.name}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {user?.role}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="flex-1"
+              >
+                {theme === 'dark' ? (
+                  <SunIcon className="h-5 w-5" />
+                ) : (
+                  <MoonIcon className="h-5 w-5" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleLogout}
+                className="flex-1"
+              >
+                <ArrowRightOnRectangleIcon className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+

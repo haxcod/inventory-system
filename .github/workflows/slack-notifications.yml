@@ -1,0 +1,158 @@
+name: Slack Notifications
+
+on:
+  workflow_run:
+    workflows: ["Test Suite", "Nightly Test Suite", "Deploy"]
+    types: [completed]
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Check workflow result
+      id: check-result
+      run: |
+        if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "emoji=✅" >> $GITHUB_OUTPUT
+          echo "color=good" >> $GITHUB_OUTPUT
+          echo "message=All tests passed successfully!" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event.workflow_run.conclusion }}" == "failure" ]; then
+          echo "status=failure" >> $GITHUB_OUTPUT
+          echo "emoji=❌" >> $GITHUB_OUTPUT
+          echo "color=danger" >> $GITHUB_OUTPUT
+          echo "message=Tests failed! Please check the logs." >> $GITHUB_OUTPUT
+        else
+          echo "status=cancelled" >> $GITHUB_OUTPUT
+          echo "emoji=⚠️" >> $GITHUB_OUTPUT
+          echo "color=warning" >> $GITHUB_OUTPUT
+          echo "message=Workflow was cancelled." >> $GITHUB_OUTPUT
+        fi
+
+    - name: Notify Slack
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ steps.check-result.outputs.status }}
+        channel: '#testing'
+        text: '${{ steps.check-result.outputs.emoji }} ${{ steps.check-result.outputs.message }}'
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        custom_payload: |
+          {
+            "attachments": [
+              {
+                "color": "${{ steps.check-result.outputs.color }}",
+                "title": "Test Results - ${{ github.event.workflow_run.name }}",
+                "title_link": "${{ github.event.workflow_run.html_url }}",
+                "fields": [
+                  {
+                    "title": "Repository",
+                    "value": "${{ github.repository }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Branch",
+                    "value": "${{ github.event.workflow_run.head_branch }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Commit",
+                    "value": "<${{ github.event.workflow_run.head_commit.url }}|${{ github.event.workflow_run.head_sha }}>",
+                    "short": true
+                  },
+                  {
+                    "title": "Author",
+                    "value": "${{ github.event.workflow_run.head_commit.author.name }}",
+                    "short": true
+                  },
+                  {
+                    "title": "Status",
+                    "value": "${{ steps.check-result.outputs.emoji }} ${{ steps.check-result.outputs.status }}",
+                    "short": false
+                  }
+                ],
+                "footer": "GitHub Actions",
+                "footer_icon": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+                "ts": ${{ github.event.workflow_run.run_started_at }}
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  notify-discord:
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Check workflow result
+      id: check-result
+      run: |
+        if [ "${{ github.event.workflow_run.conclusion }}" == "success" ]; then
+          echo "status=success" >> $GITHUB_OUTPUT
+          echo "emoji=✅" >> $GITHUB_OUTPUT
+          echo "color=0x00ff00" >> $GITHUB_OUTPUT
+          echo "message=All tests passed successfully!" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event.workflow_run.conclusion }}" == "failure" ]; then
+          echo "status=failure" >> $GITHUB_OUTPUT
+          echo "emoji=❌" >> $GITHUB_OUTPUT
+          echo "color=0xff0000" >> $GITHUB_OUTPUT
+          echo "message=Tests failed! Please check the logs." >> $GITHUB_OUTPUT
+        else
+          echo "status=cancelled" >> $GITHUB_OUTPUT
+          echo "emoji=⚠️" >> $GITHUB_OUTPUT
+          echo "color=0xffff00" >> $GITHUB_OUTPUT
+          echo "message=Workflow was cancelled." >> $GITHUB_OUTPUT
+        fi
+
+    - name: Notify Discord
+      if: always()
+      uses: Ilshidur/action-discord@master
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      with:
+        args: |
+          {
+            "embeds": [
+              {
+                "title": "${{ steps.check-result.outputs.emoji }} Test Results - ${{ github.event.workflow_run.name }}",
+                "description": "${{ steps.check-result.outputs.message }}",
+                "url": "${{ github.event.workflow_run.html_url }}",
+                "color": ${{ steps.check-result.outputs.color }},
+                "fields": [
+                  {
+                    "name": "Repository",
+                    "value": "${{ github.repository }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Branch",
+                    "value": "${{ github.event.workflow_run.head_branch }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "[${{ github.event.workflow_run.head_sha }}](${{ github.event.workflow_run.head_commit.url }})",
+                    "inline": true
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.event.workflow_run.head_commit.author.name }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "Status",
+                    "value": "${{ steps.check-result.outputs.emoji }} ${{ steps.check-result.outputs.status }}",
+                    "inline": true
+                  }
+                ],
+                "footer": {
+                  "text": "GitHub Actions",
+                  "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                },
+                "timestamp": "${{ github.event.workflow_run.run_started_at }}"
+              }
+            ]
+          }
