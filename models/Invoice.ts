@@ -107,8 +107,7 @@ const InvoiceSchema = new Schema<InvoiceDocument>({
   timestamps: true,
 });
 
-// Indexes
-InvoiceSchema.index({ invoiceNumber: 1 });
+// Indexes (only add non-unique indexes here since unique indexes are already defined in schema)
 InvoiceSchema.index({ branch: 1 });
 InvoiceSchema.index({ createdBy: 1 });
 InvoiceSchema.index({ paymentStatus: 1 });

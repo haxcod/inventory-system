@@ -30,7 +30,13 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
     const secretKey = getSecretKey();
     const { payload } = await jwtVerify(token, secretKey);
-    return payload as JWTPayload;
+    return {
+      userId: payload.sub || payload.userId as string,
+      email: payload.email as string,
+      role: payload.role as string,
+      permissions: payload.permissions as string[] || [],
+      branch: payload.branch as string || ''
+    } as JWTPayload;
   } catch (error) {
     return null;
   }
@@ -42,4 +48,33 @@ export async function getCurrentUser(req?: NextRequest): Promise<JWTPayload | nu
   
   const payload = await verifyToken(token);
   return payload;
+}
+
+export function hasPermission(user: JWTPayload, permission: string): boolean {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (!permission) return false;
+  if (!user.permissions || !Array.isArray(user.permissions)) return false;
+  
+  // Check for exact permission match
+  if (user.permissions.includes(permission)) return true;
+  
+  // Check for wildcard permissions
+  if (user.permissions.includes('read:all') && permission.startsWith('read:')) return true;
+  if (user.permissions.includes('write:all') && permission.startsWith('write:')) return true;
+  if (user.permissions.includes('delete:all') && permission.startsWith('delete:')) return true;
+  
+  return false;
+}
+
+export function hasRole(user: JWTPayload, role: string): boolean {
+  if (!user || !role) return false;
+  return user.role === role;
+}
+
+export function canAccessBranch(user: JWTPayload, branchId: string): boolean {
+  if (!user) return false;
+  if (user.role === 'admin') return true;
+  if (!branchId) return false;
+  return user.branch === branchId;
 }

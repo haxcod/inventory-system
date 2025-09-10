@@ -29,6 +29,9 @@ const customJestConfig = {
   moduleNameMapper: {  // ✅ Correct property name
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(bson|mongodb)/)',
+  ],
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',

@@ -49,7 +49,7 @@ export async function GET(
     });
 
     // Return PDF as response
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBuffer as any, {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="invoice-${invoice.invoiceNumber}.pdf"`,

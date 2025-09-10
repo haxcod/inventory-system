@@ -100,10 +100,7 @@ const ProductSchema = new Schema<ProductDocument>({
   timestamps: true,
 });
 
-// Indexes
-ProductSchema.index({ sku: 1 });
-ProductSchema.index({ barcode: 1 });
-ProductSchema.index({ qrCode: 1 });
+// Indexes (only add non-unique indexes here since unique indexes are already defined in schema)
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ branch: 1 });
 ProductSchema.index({ isActive: 1 });

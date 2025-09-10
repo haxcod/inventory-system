@@ -24,19 +24,19 @@ export async function verifyPassword(password: string, hashedPassword: string): 
 }
 
 export function generateToken(payload: JWTPayload): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN } as any);
 }
 
 export function verifyToken(token: string): JWTPayload | null {
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as JWTPayload;
+    const payload = jwt.verify(token, JWT_SECRET as jwt.Secret) as JWTPayload;
     return payload;
   } catch (error) {
     return null;
   }
 }
 
-export function setAuthCookie(token: string, req?: NextRequest) {
+export async function setAuthCookie(token: string, req?: NextRequest) {
   const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -52,7 +52,7 @@ export function setAuthCookie(token: string, req?: NextRequest) {
       ...cookieOptions
     });
   } else {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set({
       name: 'auth-token',
       value: token,
@@ -65,16 +65,16 @@ export function getAuthToken(req?: NextRequest): string | null {
   if (req) {
     return req.cookies.get('auth-token')?.value || null;
   }
-  const cookieStore = cookies();
-  return cookieStore.get('auth-token')?.value || null;
+  // For client-side usage, we'll need to handle this differently
+  return null;
 }
 
 export function clearAuthCookie(req?: NextRequest) {
   if (req) {
     req.cookies.delete('auth-token');
   } else {
-    const cookieStore = cookies();
-    cookieStore.delete('auth-token');
+    // For client-side usage, we'll need to handle this differently
+    return;
   }
 }
 

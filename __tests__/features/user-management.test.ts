@@ -117,7 +117,7 @@ describe('User Management Feature Tests', () => {
         })
       })
 
-      const response = await PUT(request)
+      const response = await PUT(request, { params: { id: 'test-id' } })
       const data = await response.json()
 
       expect(response.status).toBe(200)
@@ -152,7 +152,7 @@ describe('User Management Feature Tests', () => {
         })
       })
 
-      const response = await PUT(request)
+      const response = await PUT(request, { params: { id: 'test-id' } })
       const data = await response.json()
 
       expect(response.status).toBe(200)

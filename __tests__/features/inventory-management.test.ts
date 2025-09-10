@@ -34,6 +34,26 @@ jest.mock('@/models/Inventory', () => ({
   findByIdAndDelete: jest.fn(),
 }))
 
+// Mock the Product model
+jest.mock('@/models/Product', () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  findByIdAndDelete: jest.fn(),
+}))
+
+// Mock the Branch model
+jest.mock('@/models/Branch', () => ({
+  find: jest.fn(),
+  findById: jest.fn(),
+  findOne: jest.fn(),
+  create: jest.fn(),
+  findByIdAndUpdate: jest.fn(),
+  findByIdAndDelete: jest.fn(),
+}))
+
 const Inventory = require('@/models/Inventory')
 const { hasPermission, getCurrentUser } = require('@/lib/auth')
 
@@ -111,7 +131,7 @@ describe('Inventory Management Feature Tests', () => {
         })
       })
 
-      const response = await PUT(request)
+      const response = await PUT(request, { params: { id: 'test-id' } })
       const data = await response.json()
 
       expect(response.status).toBe(200)

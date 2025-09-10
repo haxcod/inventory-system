@@ -43,8 +43,7 @@ const UserSchema = new Schema<UserDocument>({
   timestamps: true,
 });
 
-// Indexes
-UserSchema.index({ email: 1 });
+// Indexes (only add non-unique indexes here since unique indexes are already defined in schema)
 UserSchema.index({ role: 1 });
 UserSchema.index({ branch: 1 });
 UserSchema.index({ isActive: 1 });

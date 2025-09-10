@@ -204,12 +204,16 @@ beforeEach(() => {
 
 // Mock auth functions
 jest.mock('@/lib/auth', () => ({
+  hashPassword: jest.fn(),
   verifyPassword: jest.fn(),
   generateToken: jest.fn(),
+  verifyToken: jest.fn(),
   getCurrentUser: jest.fn(),
   setAuthCookie: jest.fn(),
   clearAuthCookie: jest.fn(),
   hasPermission: jest.fn(),
+  hasRole: jest.fn(),
+  canAccessBranch: jest.fn(),
 }))
 
 // Mock auth-edge functions
@@ -217,6 +221,9 @@ jest.mock('@/lib/auth-edge', () => ({
   verifyToken: jest.fn(),
   getCurrentUser: jest.fn(),
   getAuthToken: jest.fn(),
+  hasPermission: jest.fn(),
+  hasRole: jest.fn(),
+  canAccessBranch: jest.fn(),
 }))
 
 // Mock environment variables

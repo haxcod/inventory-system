@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Product from '@/models/Product';
+import Branch from '@/models/Branch';
 import { getCurrentUser } from '@/lib/auth';
 import { ApiResponse, PaginationParams } from '@/types';
 

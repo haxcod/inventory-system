@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { GET, POST } from '@/app/api/products/route'
-import { PUT, DELETE } from '@/app/api/products/[id]/route'
+import { GET as GET_BY_ID, PUT, DELETE } from '@/app/api/products/[id]/route'
 
 // Mock the MongoDB connection
 jest.mock('@/lib/mongodb', () => ({
@@ -582,7 +582,7 @@ describe('/api/products - Product Management API Tests', () => {
       Product.findById.mockRejectedValue(new Error('Invalid ID format'))
 
       const request = new NextRequest('http://localhost:3000/api/products/invalid-id')
-      const response = await GET(request, { params: { id: 'invalid-id' } })
+      const response = await GET_BY_ID(request, { params: { id: 'invalid-id' } })
       const data = await response.json()
 
       expect(response.status).toBe(500)

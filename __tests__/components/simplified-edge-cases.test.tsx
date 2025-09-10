@@ -3,13 +3,14 @@ import { screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { Button } from '@/components/ui/Button'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
-import { render, TestErrorBoundary, createErrorComponent } from '../helpers/test-wrappers'
+import { render, TestErrorBoundary, createErrorComponent } from '../helpers/simple-test-wrappers'
 
 describe('Simplified Component Edge Cases', () => {
   describe('Button Component - Basic Edge Cases', () => {
     it('should handle null and undefined children', () => {
-      render(<Button>{null}</Button>)
+      const { unmount } = render(<Button>{null}</Button>)
       expect(screen.getByRole('button')).toBeInTheDocument()
+      unmount()
       
       render(<Button>{undefined}</Button>)
       expect(screen.getByRole('button')).toBeInTheDocument()
